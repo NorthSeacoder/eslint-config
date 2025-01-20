@@ -1,10 +1,17 @@
-import type { FlatESLintConfigItem } from 'eslint-define-config'
-import globals from 'globals'
-import { pluginAntfu, pluginUnusedImports } from '../plugins'
-import { OFF } from '../flags'
-import type { OptionsIsInEditor } from '../types'
+import type { OptionsIsInEditor, OptionsOverrides, TypedFlatConfigItem } from '../types'
 
-export function javascript(options: OptionsIsInEditor = {}): FlatESLintConfigItem[] {
+import globals from 'globals'
+
+import { pluginAntfu, pluginUnusedImports } from '../plugins'
+
+export async function javascript(
+  options: OptionsIsInEditor & OptionsOverrides = {},
+): Promise<TypedFlatConfigItem[]> {
+  const {
+    isInEditor = false,
+    overrides = {},
+  } = options
+
   return [
     {
       languageOptions: {
@@ -26,6 +33,13 @@ export function javascript(options: OptionsIsInEditor = {}): FlatESLintConfigIte
         },
         sourceType: 'module',
       },
+      linterOptions: {
+        reportUnusedDisableDirectives: true,
+      },
+      name: 'antfu/javascript/setup',
+    },
+    {
+      name: 'antfu/javascript/rules',
       plugins: {
         'antfu': pluginAntfu,
         'unused-imports': pluginUnusedImports,
@@ -33,25 +47,16 @@ export function javascript(options: OptionsIsInEditor = {}): FlatESLintConfigIte
       rules: {
         'accessor-pairs': ['error', { enforceForClassMembers: true, setWithoutGet: true }],
 
-        'antfu/import-dedupe': 'error',
-        'antfu/no-import-node-modules-by-path': 'error',
-        'antfu/top-level-function': 'error',
+        'antfu/no-top-level-await': 'error',
 
         'array-callback-return': 'error',
-        'arrow-parens': ['error', 'as-needed', { requireForBlockBody: true }],
         'block-scoped-var': 'error',
-        'camelcase': OFF,
-        'complexity': OFF,
-        'consistent-return': OFF,
         'constructor-super': 'error',
         'default-case-last': 'error',
         'dot-notation': ['error', { allowKeywords: true }],
-        'eol-last': 'error',
         'eqeqeq': ['error', 'smart'],
-        'max-statements-per-line': ['error', { max: 1 }],
         'new-cap': ['error', { capIsNew: false, newIsCap: true, properties: true }],
-        'new-parens': 'error',
-        'no-alert': 'warn',
+        'no-alert': 'error',
         'no-array-constructor': 'error',
         'no-async-promise-executor': 'error',
         'no-caller': 'error',
@@ -61,7 +66,6 @@ export function javascript(options: OptionsIsInEditor = {}): FlatESLintConfigIte
         'no-cond-assign': ['error', 'always'],
         'no-console': ['error', { allow: ['warn', 'error'] }],
         'no-const-assign': 'error',
-        'no-constant-condition': 'warn',
         'no-control-regex': 'error',
         'no-debugger': 'error',
         'no-delete-var': 'error',
@@ -77,39 +81,26 @@ export function javascript(options: OptionsIsInEditor = {}): FlatESLintConfigIte
         'no-extend-native': 'error',
         'no-extra-bind': 'error',
         'no-extra-boolean-cast': 'error',
-        'no-extra-parens': ['error', 'functions'],
         'no-fallthrough': 'error',
-        'no-floating-decimal': 'error',
         'no-func-assign': 'error',
         'no-global-assign': 'error',
         'no-implied-eval': 'error',
         'no-import-assign': 'error',
         'no-invalid-regexp': 'error',
-        'no-invalid-this': 'error',
         'no-irregular-whitespace': 'error',
         'no-iterator': 'error',
         'no-labels': ['error', { allowLoop: false, allowSwitch: false }],
         'no-lone-blocks': 'error',
         'no-loss-of-precision': 'error',
         'no-misleading-character-class': 'error',
-        'no-mixed-operators': ['error', {
-          allowSamePrecedence: true,
-          groups: [
-            ['==', '!=', '===', '!==', '>', '>=', '<', '<='],
-            ['&&', '||'],
-            ['in', 'instanceof'],
-          ],
-        }],
         'no-multi-str': 'error',
         'no-new': 'error',
         'no-new-func': 'error',
-        'no-new-object': 'error',
-        'no-new-symbol': 'error',
+        'no-new-native-nonconstructor': 'error',
         'no-new-wrappers': 'error',
         'no-obj-calls': 'error',
         'no-octal': 'error',
         'no-octal-escape': 'error',
-        'no-param-reassign': OFF,
         'no-proto': 'error',
         'no-prototype-builtins': 'error',
         'no-redeclare': ['error', { builtinGlobals: false }],
@@ -129,12 +120,9 @@ export function javascript(options: OptionsIsInEditor = {}): FlatESLintConfigIte
         ],
         'no-restricted-syntax': [
           'error',
-          'DebuggerStatement',
-          'LabeledStatement',
-          'WithStatement',
+          'TSEnumDeclaration[const=true]',
+          'TSExportAssignment',
         ],
-        'no-return-assign': OFF,
-        'no-return-await': OFF,
         'no-self-assign': ['error', { props: true }],
         'no-self-compare': 'error',
         'no-sequences': 'error',
@@ -169,11 +157,9 @@ export function javascript(options: OptionsIsInEditor = {}): FlatESLintConfigIte
         'no-useless-catch': 'error',
         'no-useless-computed-key': 'error',
         'no-useless-constructor': 'error',
-        'no-useless-escape': OFF,
         'no-useless-rename': 'error',
         'no-useless-return': 'error',
         'no-var': 'error',
-        'no-void': 'error',
         'no-with': 'error',
         'object-shorthand': [
           'error',
@@ -204,38 +190,25 @@ export function javascript(options: OptionsIsInEditor = {}): FlatESLintConfigIte
         'prefer-rest-params': 'error',
         'prefer-spread': 'error',
         'prefer-template': 'error',
-        'quote-props': ['error', 'consistent-as-needed'],
-        'require-await': OFF,
-        'sort-imports': [
-          'error',
-          {
-            allowSeparatedGroups: false,
-            ignoreCase: false,
-            ignoreDeclarationSort: true,
-            ignoreMemberSort: false,
-            memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
-          },
-        ],
         'symbol-description': 'error',
         'unicode-bom': ['error', 'never'],
-
-        'unused-imports/no-unused-imports': options.isInEditor ? OFF : 'error',
+        'unused-imports/no-unused-imports': isInEditor ? 'off' : 'error',
         'unused-imports/no-unused-vars': [
-          'warn',
-          { args: 'after-used', argsIgnorePattern: '^_', vars: 'all', varsIgnorePattern: '^_' },
+          'error',
+          {
+            args: 'after-used',
+            argsIgnorePattern: '^_',
+            ignoreRestSiblings: true,
+            vars: 'all',
+            varsIgnorePattern: '^_',
+          },
         ],
-
         'use-isnan': ['error', { enforceForIndexOf: true, enforceForSwitchCase: true }],
         'valid-typeof': ['error', { requireStringLiterals: true }],
         'vars-on-top': 'error',
-        'wrap-iife': ['error', 'any', { functionPrototypeMethods: true }],
         'yoda': ['error', 'never'],
-      },
-    },
-    {
-      files: ['scripts/**/*.*', 'cli.*'],
-      rules: {
-        'no-console': OFF,
+
+        ...overrides,
       },
     },
   ]

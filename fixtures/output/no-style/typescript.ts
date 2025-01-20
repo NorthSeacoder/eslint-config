@@ -1,7 +1,6 @@
 // Define a TypeScript interface
-interface Person {
-  name: string;
-  age: number;
+interface Person { 
+  name: string; age: number;
 }
 
 // Create an array of objects with the defined interface
@@ -13,7 +12,7 @@ const people: Person[] = [
 ];
 
 // eslint-disable-next-line no-console
-var log = console.log
+const log = console.log
 
 // Use a for...of loop to iterate over the array
 for (const person of people) {
@@ -26,7 +25,8 @@ function identity< T  >(arg: T): T {
 }
 
 // Use the generic function with type inference
-const result = identity('TypeScript is awesome');
+const result = identity(
+  'TypeScript is awesome');
 log(result);
 
 // Use optional properties in an interface
@@ -72,8 +72,9 @@ class Dog extends Animal {
 const dog = new Dog('Buddy');
 dog.bark();
 
-var fn = (): string => {
-  return 'hello' + 1
+const fn = (): string => {
+  return `hello${  1}`
 }
 
 log(car1, car2, favoriteFruit, numericValue, fn())
+
